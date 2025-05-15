@@ -1,0 +1,34 @@
+name: llms
+description: "A flutter binding for llama.cpp, which use platform channel."
+version: 0.0.1
+
+repository: https://github.com/m9m9ra/llms
+issue_tracker: https://github.com/m9m9ra/llms/issues
+homepage: https://pub.dev/packages/llms
+
+platforms:
+  android:
+  ios:
+
+environment:
+  sdk: ">=3.7.2 <4.0.0"
+  flutter: ">=3.3.0"
+
+# Add regular dependencies here.
+dependencies:
+  flutter:
+      sdk: flutter
+  # path: ^1.8.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.24.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: ink.xcl.fllama
+        pluginClass: FllamaPlugin
+      ios:
+        pluginClass: FllamaPlugin
