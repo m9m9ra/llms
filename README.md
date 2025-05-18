@@ -37,3 +37,6 @@ const like = 'sample';
 TODO: Tell users more about the package: where to find more information, how to 
 contribute to the package, how to file issues, what response they can expect 
 from the package authors, and more.
+
+## llama.cpp ref
+https://github.com/ggml-org/llama.cpp/tree/ceda28ef8e310a8dee60bf275077a3eedae8e36c

@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.dbclient-js": "javascript",
+        "*.json": "json",
+        "*.tsx": "typescriptreact",
+        "algorithm": "cpp"
+    }
+}
