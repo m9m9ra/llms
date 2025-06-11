@@ -1,7 +1,7 @@
 name: llms
 description: "A flutter binding for llama.cpp, which use platform channel."
 version: 0.0.1
-
+publish_to: 'none'
 repository: https://github.com/m9m9ra/llms
 issue_tracker: https://github.com/m9m9ra/llms/issues
 homepage: https://pub.dev/packages/llms
