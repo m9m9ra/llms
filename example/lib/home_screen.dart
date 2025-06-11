@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:llms/llms.dart';
+import 'package:llms_example/file_provider.dart';
 import 'package:llms_example/other/message.dart';
 import 'package:llms_example/other/message_role.dart';
 import 'package:llms_example/other/mock_res.dart';
@@ -23,9 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController textEditingController = TextEditingController();
   final FocusNode textEditingFocusNode = FocusNode();
+  final FileProvider _fileProvider = FileProvider();
 
   // double textFieldContainerHeight = 92.0;
   double textFieldContainerHeight = 112.0;
+  String modelContextId = "";
+  String filePath = "";
 
   @override
   void initState() {
@@ -84,18 +88,91 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
+  Future<void> _openModelFile() async {
+    String? _filePath = await _fileProvider.openGgufFile();
+    if (_filePath != null) {
+      setState(() {
+        filePath = _filePath;
+      });
+      snakBarOfContext(context, 'Open sucseeful');
+      Llms.instance()
+          ?.initContext(_filePath, emitLoadProgress: true)
+          .then((context) {
+            modelContextId = context?["contextId"].toString() ?? "";
+            if (modelContextId.isNotEmpty) {
+              // you can get modelContextId，if modelContextId > 0 is success.
+            }
+          })
+          .then((_) {
+            Llms.instance()
+                ?.completion(
+                  double.parse(modelContextId),
+                  prompt:
+                      'This is a conversation between user and Llms. Please only output the answer and no examples needed. \n User: Привет! Как прошел твой день ? \n Llms:',
+                  nPredict: 100,
+                  emitRealtimeCompletion: true,
+                  stop: ["<eos>", "User"],
+                )
+                .then((res) {
+                  debugPrint("[Llms] Res=$res");
+                });
+            // Llms.instance()?.onTokenStream?.listen((data) {
+            //   if (data['function'] == "loadProgress") {
+            //     debugPrint("[FCllama] loadProgress=${data['result']}");
+            //   } else if (data['function'] == "completion") {
+            //     debugPrint("[FCllama] completion=${data['result']}");
+            //     final tempRes = data["result"]["token"];
+            //     debugPrint(tempRes);
+            //     // tempRes is ans
+            //   }
+            // });
+            // Llms.instance()
+            //     ?.tokenize(
+            //       double.parse(modelContextId),
+            //       text: "What can you do?",
+            //     )
+            //     .then((res) {
+            //       debugPrint("[FCllama] Tokenize Res $res");
+            //       Llms.instance()
+            //           ?.detokenize(
+            //             double.parse(modelContextId),
+            //             tokens: res?['tokens'],
+            //           )
+            //           .then((res) {
+            //             debugPrint("[FCllama] Detokenize Res $res");
+            //           });
+            //     });
+          });
+      return;
+    }
+    snakBarOfContext(context, 'Error: ?');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      drawer: Drawer(),
-      appBar: AppBar(
+      drawer: Drawer(
+        width: MediaQuery.sizeOf(context).width * 0.64,
+        child: Container(),
+      ),
+      appBar: CupertinoNavigationBar(
         backgroundColor: Colors.white,
-        leading: IconButton(onPressed: () => (), icon: Icon(Symbols.menu)),
-        title: Text('llms example: swift?'),
-        centerTitle: false,
+        leading: IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+          icon: Icon(Symbols.notes, size: 24.0),
+        ),
+        middle: Text('llms example'),
+        trailing: IconButton(
+          onPressed: () async {
+            _openModelFile();
+          },
+          icon: Icon(Symbols.folder, size: 24.0),
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
